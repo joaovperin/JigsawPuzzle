@@ -12,8 +12,8 @@
     <div class="container center">
         <div class="container border">
             <label for="file">Imagem</label>
-            <input name="file" type="file">
-            <input type="button" value="Load" onclick="app.loadImage()">
+            <input id="file" name="file" type="file">
+            <input id="load" type="button" value="Load" onclick="app.loadImage()" >
         </div>
         <div class="container border">
             <canvas id="canvas" width="500" height="500"></canvas>
@@ -23,6 +23,8 @@
     <div class="invisible">
         <img src="notFound.jpeg" alt="Not FOund" id="img">
     </div>
+
+    <script type="text/javascript" src="app.js"></script>
 
     <script>
         window['app'] = new App();

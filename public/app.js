@@ -2,17 +2,40 @@
  * Aplicativo
  */
 function App() {
+
     var self = this;
 
-    self.onLoad = function(){
+    /**
+     * Função chamada ao carregamento da página
+     */
+    self.onLoad = function () {
         console.log('carregou a pagina');
+        // Toda vez que mudar o arquivo, guarda a referência do arquivo selecionado
+        document.getElementById('file').addEventListener('change', function (evt) {
+            self.file = evt.target.files[0];
+        });
     };
 
+    /**
+     * Função responsável por carregar uma imagem
+     */
     self.loadImage = function () {
-        img = document.getElementById('img');
 
-        alert('BURRO');
+        var file = self.file;
+        var reader = new FileReader();
+        // Quando terminar de carregar
+        reader.onloadend = function () {
+            if (reader.result) {
+                document.getElementById('img').src = reader.result;
+            }
+        }
 
+        if (file) {
+            reader.readAsDataURL(file);
+        } else {
+            document.getElementById('img').src = "notFound.jpeg";
+        }
+        //alert('BURRO');
     };
     //app.start();
 
