@@ -1,0 +1,34 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="style.css">
+    <title>Jigsaw Puzzle</title>
+</head>
+
+<body>
+    <div class="container center">
+        <div class="container border">
+            <label for="file">Imagem</label>
+            <input name="file" type="file">
+            <input type="button" value="Load" onclick="app.loadImage()">
+        </div>
+        <div class="container border">
+            <canvas id="canvas" width="500" height="500"></canvas>
+        </div>
+    </div>
+
+    <div class="invisible">
+        <img src="notFound.jpeg" alt="Not FOund" id="img">
+    </div>
+
+    <script>
+        window['app'] = new App();
+        window['app'].onLoad();
+    </script>
+
+</body>
+
+</html>

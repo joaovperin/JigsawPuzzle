@@ -1,0 +1,25 @@
+body {
+    background-color:rgb(220, 220, 220);
+}
+
+.container {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+div.center {
+    text-align: center;
+}
+
+div.container.border{
+    border-style: solid;
+    border-width: 1px;
+}
+
+.invisible{
+    display: block;
+}
+
+canvas {
+    background-color:white;
+}
