@@ -32,10 +32,12 @@ function App() {
 
         if (file) {
             reader.readAsDataURL(file);
-        } else {
-            document.getElementById('img').src = "notFound.jpeg";
         }
-        //alert('BURRO');
+    };
+
+    self.clearImage = function () {
+        document.getElementById('img').src = "notFound.jpeg";
+        self.file = '';
     };
     //app.start();
 
