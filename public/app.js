@@ -35,19 +35,24 @@ function App() {
         document.getElementById('file').addEventListener('change', function (evt) {
             self.file = evt.target.files[0];
         });
-        // ~30 FPS
+        // ~60 FPS
         self.mainLoop = setInterval(function () {
             self.update();
             self.render();
-        }, 30);
+        }, 16);
     };
 
     self.update = function () {
-        self.puzzle.update();
+        if (self.puzzle) {
+            self.puzzle.update();
+        }
     };
+
     self.render = function () {
-        self.puzzle.clear();
-        self.puzzle.draw();
+        if (self.puzzle) {
+            self.puzzle.clear();
+            self.puzzle.draw();
+        }
     };
 
     /**
@@ -116,14 +121,18 @@ function Puzzle(img, canvasSize, numRows) {
     })();
 
     self.clickEvent = function (cX, cY) {
-        alert('clicked an element at X:' +cX + 'and Y:' + cY);
         self.subs.forEach(function (elm) {
             // Collision detection between clicked offset and element.
-            //if (y > elm.top && y < elm.top + elm.height
-            //  && x > elm.left && x < elm.left + elm.width) {
-            //alert('clicked an element');
-            //}
+            if (elm.isInContact(cX, cY)) {
+                elm.select();
+            } else {
+                elm.unselect();
+            }
         });
+    };
+
+    self.update = function () {
+
     };
 
     self.shuffle = function () {
@@ -160,6 +169,14 @@ function SubImage(img, s, startX, startY) {
 
     var bright = false;
 
+    self.isInContact = function (mX, mY) {
+        if (mY > sy && mY < sy + s
+            && mX > sx && mX < sx + s) {
+            return true;
+        }
+        return false;
+    };
+
     self.select = function () {
         bright = true;
     };
@@ -175,10 +192,10 @@ function SubImage(img, s, startX, startY) {
 
     self.draw = function (px, py) {
         ctx.drawImage(img, sx, sy, s, s, px, py, s, s);
-        if (!bright) {
+        if (bright) {
             // darken the image with a 50% black fill
             ctx.save();
-            ctx.globalAlpha = .50;
+            ctx.globalAlpha = .70;
             ctx.fillStyle = "black";
             ctx.fillRect(sx, sy, s, s);
             ctx.restore();
