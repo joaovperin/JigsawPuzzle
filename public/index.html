@@ -13,15 +13,16 @@
         <div class="container border">
             <label for="file">Imagem</label>
             <input id="file" name="file" type="file">
-            <input id="load" type="button" value="Load" onclick="app.loadImage()" >
-            <input id="clear" type="button" value="Clear" onclick="app.clearImage()" >
+            <input id="load" type="button" value="Load" onclick="app.loadImage()">
+            <input id="clear" type="button" value="Clear" onclick="app.clearImage()">
+            <input id="shuffle" type="button" value="Shuffle" onclick="app.shuffle()">
         </div>
         <div class="container border">
             <canvas id="canvas" width="500" height="500"></canvas>
         </div>
     </div>
 
-    <div class="invisible">
+    <div class="invisible container border">
         <img src="notFound.jpeg" alt="Not FOund" id="img">
     </div>
 
