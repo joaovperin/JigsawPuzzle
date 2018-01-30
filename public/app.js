@@ -1,5 +1,8 @@
 /**
  * Aplicativo
+ * 
+ * // https://stackoverflow.com/questions/9880279/how-do-i-add-a-simple-onclick-event-handler-to-a-canvas-element
+ * 
  */
 function App() {
 
@@ -8,20 +11,48 @@ function App() {
 
     /** Arquivo de imagem */
     self.file = undefined;
-    /**Quebra cabeças */
+    /** Quebra cabeças */
     self.puzzle = undefined;
+    /** Loop principal */
+    self.mainLoop = undefined;
 
     /**
      * Função chamada ao carregamento da página
      */
     self.onLoad = function () {
-        window['ctx'] = document.getElementById('canvas').getContext('2d');
+        var myCanvas = document.getElementById('canvas');
+        window['ctx'] = myCanvas.getContext('2d');
+        // Add o listener do clique no canvas
+        myCanvas.addEventListener('click', function (event) {
+            if (self.puzzle) {
+                var elemLeft = myCanvas.offsetLeft, elemTop = myCanvas.offsetTop;
+                var x = event.pageX - elemLeft,
+                    y = event.pageY - elemTop;
+                self.puzzle.clickEvent(x, y)
+            }
+        }, false);
         // Toda vez que mudar o arquivo, guarda a referência do arquivo selecionado
         document.getElementById('file').addEventListener('change', function (evt) {
             self.file = evt.target.files[0];
         });
+        // ~30 FPS
+        self.mainLoop = setInterval(function () {
+            self.update();
+            self.render();
+        }, 30);
     };
 
+    self.update = function () {
+        self.puzzle.update();
+    };
+    self.render = function () {
+        self.puzzle.clear();
+        self.puzzle.draw();
+    };
+
+    /**
+     * Embaralha o puzzle
+     */
     self.shuffle = function () {
         if (self.puzzle) {
             self.puzzle.clear();
@@ -45,18 +76,19 @@ function App() {
                 self.puzzle.draw();
             };
         };
-
         // Se informou um arquivo
         if (file) {
             reader.readAsDataURL(file);
         }
     };
 
+    /**
+     *  Limpa a imagem 
+     */
     self.clearImage = function () {
         document.getElementById('img').src = "notFound.jpeg";
         self.file = '';
     };
-    //app.start();
 
     return self;
 }
@@ -77,10 +109,22 @@ function Puzzle(img, canvasSize, numRows) {
         var s = self.size;
         for (var i = 0; i < numRows; i++) {
             for (var j = 0; j < numRows; j++) {
-                self.subs.push(new SubImage(img, s, s * j, s * i));
+                var subtmp = new SubImage(img, s, s * j, s * i);
+                self.subs.push(subtmp);
             }
         }
     })();
+
+    self.clickEvent = function (cX, cY) {
+        alert('clicked an element at X:' +cX + 'and Y:' + cY);
+        self.subs.forEach(function (elm) {
+            // Collision detection between clicked offset and element.
+            //if (y > elm.top && y < elm.top + elm.height
+            //  && x > elm.left && x < elm.left + elm.width) {
+            //alert('clicked an element');
+            //}
+        });
+    };
 
     self.shuffle = function () {
         shuffleArray(self.subs);
@@ -95,11 +139,12 @@ function Puzzle(img, canvasSize, numRows) {
     };
 
     self.clear = function () {
-        for (var i = 0; i < numRows; i++) {
-            for (var j = 0; j < numRows; j++) {
-                self.subs[i * j + i].clear(i * self.size, j * self.size);
-            }
-        }
+        ctx.clearRect(0, 0, canvasSize, canvasSize);
+        //for (var i = 0; i < numRows; i++) {
+        //    for (var j = 0; j < numRows; j++) {
+        //       self.subs[i * j + i].clear(i * self.size, j * self.size);
+        //  }
+        //}
     };
 
 }
@@ -107,12 +152,37 @@ function Puzzle(img, canvasSize, numRows) {
 /**
  * Representa uma subimagem de um quebra cabeças
  */
-function SubImage(img, s, sx, sy) {
+function SubImage(img, s, startX, startY) {
 
     var self = this;
+    var sx = startX;
+    var sy = startY;
+
+    var bright = false;
+
+    self.select = function () {
+        bright = true;
+    };
+
+    self.unselect = function () {
+        bright = false;
+    };
+
+    self.move = function (newX, newY) {
+        sx = newX;
+        st = newY;
+    };
 
     self.draw = function (px, py) {
         ctx.drawImage(img, sx, sy, s, s, px, py, s, s);
+        if (!bright) {
+            // darken the image with a 50% black fill
+            ctx.save();
+            ctx.globalAlpha = .50;
+            ctx.fillStyle = "black";
+            ctx.fillRect(sx, sy, s, s);
+            ctx.restore();
+        }
     };
 
     self.clear = function (px, py) {
