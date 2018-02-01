@@ -42,12 +42,18 @@ function App() {
         }, 16);
     };
 
+    /**
+     * Método responsável pela atualização dos frames
+     */
     self.update = function () {
         if (self.puzzle) {
             self.puzzle.update();
         }
     };
 
+    /**
+     * Método responsável pela renderização dos frames
+     */
     self.render = function () {
         if (self.puzzle) {
             self.puzzle.clear();
@@ -59,6 +65,7 @@ function App() {
      * Embaralha o puzzle
      */
     self.shuffle = function () {
+        // Se já definiu, limpa, embaralha e redesenha
         if (self.puzzle) {
             self.puzzle.clear();
             self.puzzle.shuffle();
@@ -67,7 +74,7 @@ function App() {
     };
 
     /**
-     * FunÃ§Ã£o responsÃ¡vel por carregar uma imagem
+     * Método responsável pelo carregamento da imagem selecionada
      */
     self.loadImage = function () {
         var file = self.file;
@@ -77,7 +84,7 @@ function App() {
             var img = document.getElementById('img');
             img.src = reader.result;
             img.onload = function () {
-                self.puzzle = new Puzzle(document.getElementById('img'), 500, 10);
+                self.puzzle = new Puzzle(img, 500, 3);
                 self.puzzle.draw();
             };
         };
@@ -88,7 +95,7 @@ function App() {
     };
 
     /**
-     *  Limpa a imagem 
+     *  Limpa a imagem carregada, retornando à default
      */
     self.clearImage = function () {
         document.getElementById('img').src = "notFound.jpeg";
@@ -104,8 +111,9 @@ function App() {
 function Puzzle(img, canvasSize, numRows) {
 
     var self = this;
+    /** Guarda a referência da imagem completa */
     self.fullImage = img;
-
+    /** Tamanho do canvas */
     self.size = canvasSize / numRows;
 
     // Constructor function (gambiarra, eu sei kk)
@@ -120,13 +128,21 @@ function Puzzle(img, canvasSize, numRows) {
         }
     })();
 
+    /**
+     * Método responsável por tratar o clique no Puzzle
+     * 
+     * @param {Number} cX 
+     * @param {Number} cY 
+     */
     self.clickEvent = function (cX, cY) {
+        console.log('Mouse... X: ' + cX + ' Y: ' + cY);
+        var idx = 0;
         self.subs.forEach(function (elm) {
             // Collision detection between clicked offset and element.
+            elm.unselect();
             if (elm.isInContact(cX, cY)) {
+                console.log('Elm ' + idx + ' ... X: ' + elm.getX() + ' Y: ' + elm.getY());
                 elm.select();
-            } else {
-                elm.unselect();
             }
         });
     };
@@ -137,23 +153,21 @@ function Puzzle(img, canvasSize, numRows) {
 
     self.shuffle = function () {
         shuffleArray(self.subs);
-    };
-
-    self.draw = function () {
         for (var i = 0; i < numRows; i++) {
             for (var j = 0; j < numRows; j++) {
-                self.subs[j + i * numRows].draw(j * self.size, i * self.size);
+                self.subs[j + i * numRows].move(j * self.size, i * self.size);
             }
         }
     };
 
+    self.draw = function () {
+        self.subs.forEach(function (elm) {
+            elm.draw();
+        });
+    };
+
     self.clear = function () {
         ctx.clearRect(0, 0, canvasSize, canvasSize);
-        //for (var i = 0; i < numRows; i++) {
-        //    for (var j = 0; j < numRows; j++) {
-        //       self.subs[i * j + i].clear(i * self.size, j * self.size);
-        //  }
-        //}
     };
 
 }
@@ -164,41 +178,70 @@ function Puzzle(img, canvasSize, numRows) {
 function SubImage(img, s, startX, startY) {
 
     var self = this;
+    /** Start position */
     var sx = startX;
     var sy = startY;
 
-    var bright = false;
+    /** Actual position */
+    var px = sx;
+    var py = sy;
+    /** If its selected */
+    var selected = false;
 
+    /**
+     * 
+     * @param {Number} mX 
+     * @param {Number} mY 
+     */
     self.isInContact = function (mX, mY) {
-        if (mY > sy && mY < sy + s
-            && mX > sx && mX < sx + s) {
+        // Colliding Y axis
+        if (mY > py && mY < (py + s) &&
+            // Colliding X axis
+            mX > px && mX < (px + s)) {
             return true;
         }
         return false;
     };
 
+    self.getX = function () { return px; };
+    self.getY = function () { return py; };
+
     self.select = function () {
-        bright = true;
+        selected = true;
     };
 
     self.unselect = function () {
-        bright = false;
+        selected = false;
     };
 
     self.move = function (newX, newY) {
-        sx = newX;
-        st = newY;
+        px = newX;
+        py = newY;
     };
 
-    self.draw = function (px, py) {
-        ctx.drawImage(img, sx, sy, s, s, px, py, s, s);
-        if (bright) {
-            // darken the image with a 50% black fill
+    self.draw = function () {
+        ctx.drawImage(img, px, py, s, s, sx, sy, s, s);
+        if (selected) {
+
+            // TODO: Corrigir rotina de renderização do hightlight 
+            // tá bugada :/
+
             ctx.save();
-            ctx.globalAlpha = .70;
-            ctx.fillStyle = "black";
-            ctx.fillRect(sx, sy, s, s);
+            ctx.beginPath();
+            ctx.rect(px, py, s, s);
+            //context.fillStyle = 'yellow';
+            //context.fill();
+            ctx.strokeStyle = 'yellow';
+            ctx.lineWidth = 7;
+            ctx.stroke();
             ctx.restore();
+
+            /* ctx.save();
+            // darken the image with a 50% black fill
+            ctx.globalAlpha = .30;
+            ctx.fillStyle = "black";
+            ctx.fillRect(px, py, s, s);
+            ctx.restore();*/
         }
     };
 
