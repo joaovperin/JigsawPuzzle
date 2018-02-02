@@ -100,6 +100,29 @@ function App() {
     self.clearImage = function () {
         document.getElementById('img').src = "notFound.jpeg";
         self.file = '';
+        return;
+
+        var co = ctx;
+
+        // Draw a red square
+
+        co.fillStyle = 'red';
+        co.fillRect(50, 50, 100, 100);
+
+        // Change the globalCompositeOperation to destination-over so that anything
+        // that is drawn on to the canvas from this point on is drawn at the back
+        // of whats already on the canvas
+        co.globalCompositeOperation = 'destination-over';
+        // Draw a big yellow rectangle
+
+        co.fillStyle = 'yellow';
+        co.fillRect(0, 0, 600, 250);
+        // Now return the globalCompositeOperation to source-over and draw a
+        // blue rectangle
+        co.globalCompositeOperation = 'source-over';
+        co.fillStyle = 'blue';
+        co.fillRect(75, 75, 100, 100);
+
     };
 
     return self;
@@ -179,14 +202,16 @@ function SubImage(img, s, startX, startY) {
 
     var self = this;
     /** Start position */
-    var sx = startX;
-    var sy = startY;
+    self.sx = startX;
+    self.sy = startY;
 
     /** Actual position */
-    var px = sx;
-    var py = sy;
+    self.px = self.sx;
+    self.py = self.sy;
     /** If its selected */
-    var selected = false;
+    self.selected = false;
+
+    self.s = s;
 
     /**
      * 
@@ -195,58 +220,44 @@ function SubImage(img, s, startX, startY) {
      */
     self.isInContact = function (mX, mY) {
         // Colliding Y axis
-        if (mY > py && mY < (py + s) &&
+        if (mY > self.sy && mY < (self.sy + self.s) &&
             // Colliding X axis
-            mX > px && mX < (px + s)) {
+            mX > self.sx && mX < (self.sx + self.s)) {
             return true;
         }
         return false;
     };
 
-    self.getX = function () { return px; };
-    self.getY = function () { return py; };
+    self.getX = function () { return self.px; };
+    self.getY = function () { return self.py; };
 
     self.select = function () {
-        selected = true;
+        self.selected = true;
     };
 
     self.unselect = function () {
-        selected = false;
+        self.selected = false;
     };
 
     self.move = function (newX, newY) {
-        px = newX;
-        py = newY;
+        self.px = newX;
+        self.py = newY;
     };
 
     self.draw = function () {
-        ctx.drawImage(img, px, py, s, s, sx, sy, s, s);
-        if (selected) {
-
-            // TODO: Corrigir rotina de renderização do hightlight 
-            // tá bugada :/
-
-            ctx.save();
-            ctx.beginPath();
-            ctx.rect(px, py, s, s);
-            //context.fillStyle = 'yellow';
-            //context.fill();
-            ctx.strokeStyle = 'yellow';
-            ctx.lineWidth = 7;
-            ctx.stroke();
-            ctx.restore();
-
-            /* ctx.save();
-            // darken the image with a 50% black fill
-            ctx.globalAlpha = .30;
-            ctx.fillStyle = "black";
-            ctx.fillRect(px, py, s, s);
-            ctx.restore();*/
+        var co = ctx;
+        co.fillStyle = '';
+        co.globalAlpha = 1;
+        co.drawImage(img, self.px, self.py, self.s, self.s, self.sx, self.sy, self.s, self.s);
+        if (self.selected) {
+            co.fillStyle = 'rgba(120,120,30,.3)';
+            co.globalAlpha = .30;
+            co.fillRect(self.px, self.py, self.s, self.s);
         }
     };
 
-    self.clear = function (px, py) {
-        ctx.clearRect(px, py, s, s);
+    self.clear = function () {
+        ctx.clearRect(self.px, self.py, s, s);
     };
 
     return self;
