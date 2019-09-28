@@ -6,18 +6,18 @@
  */
 function App() {
 
-    // Guarda a referência à instância corrente numa variável auxiliar interna
+    // Guarda a referÃªncia Ã  instÃ¢ncia corrente numa variÃ¡vel auxiliar interna
     var self = this;
 
     /** Arquivo de imagem */
     self.file = undefined;
-    /** Quebra cabeças */
+    /** Quebra cabeÃ§as */
     self.puzzle = undefined;
     /** Loop principal */
     self.mainLoop = undefined;
 
     /**
-     * Função chamada ao carregamento da página
+     * FunÃ§Ã£o chamada ao carregamento da pÃ¡gina
      */
     self.onLoad = function () {
         var myCanvas = document.getElementById('canvas');
@@ -31,7 +31,7 @@ function App() {
                 self.puzzle.clickEvent(x, y)
             }
         }, false);
-        // Toda vez que mudar o arquivo, guarda a referência do arquivo selecionado
+        // Toda vez que mudar o arquivo, guarda a referÃªncia do arquivo selecionado
         document.getElementById('file').addEventListener('change', function (evt) {
             self.file = evt.target.files[0];
         });
@@ -43,7 +43,7 @@ function App() {
     };
 
     /**
-     * M�todo respons�vel pela atualiza��o dos frames
+     * Método responsável pela atualização dos frames
      */
     self.update = function () {
         if (self.puzzle) {
@@ -52,7 +52,7 @@ function App() {
     };
 
     /**
-     * M�todo respons�vel pela renderiza��o dos frames
+     * Método responsável pela renderização dos frames
      */
     self.render = function () {
         if (self.puzzle) {
@@ -65,7 +65,7 @@ function App() {
      * Embaralha o puzzle
      */
     self.shuffle = function () {
-        // Se j� definiu, limpa, embaralha e redesenha
+        // Se já definiu, limpa, embaralha e redesenha
         if (self.puzzle) {
             self.puzzle.clear();
             self.puzzle.shuffle();
@@ -74,12 +74,12 @@ function App() {
     };
 
     /**
-     * M�todo respons�vel pelo carregamento da imagem selecionada
+     * Método responsável pelo carregamento da imagem selecionada
      */
     self.loadImage = function () {
         var file = self.file;
         var reader = new FileReader();
-        // Quando terminar de carregar, chama esta função
+        // Quando terminar de carregar, chama esta funÃ§Ã£o
         reader.onloadend = function () {
             var img = document.getElementById('img');
             img.src = reader.result;
@@ -95,7 +95,7 @@ function App() {
     };
 
     /**
-     *  Limpa a imagem carregada, retornando � default
+     *  Limpa a imagem carregada, retornando à default
      */
     self.clearImage = function () {
         document.getElementById('img').src = "notFound.jpeg";
@@ -129,12 +129,12 @@ function App() {
 }
 
 /**
- * Representa um quebra cabeças
+ * Representa um quebra cabeÃ§as
  */
 function Puzzle(img, canvasSize, numRows) {
 
     var self = this;
-    /** Guarda a refer�ncia da imagem completa */
+    /** Guarda a referência da imagem completa */
     self.fullImage = img;
     /** Tamanho do canvas */
     self.size = canvasSize / numRows;
@@ -152,15 +152,14 @@ function Puzzle(img, canvasSize, numRows) {
     })();
 
     /**
-     * M�todo respons�vel por tratar o clique no Puzzle
+     * Método responsável por tratar o clique no Puzzle
      * 
      * @param {Number} cX 
      * @param {Number} cY 
      */
     self.clickEvent = function (cX, cY) {
         console.log('Mouse... X: ' + cX + ' Y: ' + cY);
-        var idx = 0;
-        self.subs.forEach(function (elm) {
+        self.subs.forEach(function (elm, idx) {
             // Collision detection between clicked offset and element.
             elm.unselect();
             if (elm.isInContact(cX, cY)) {
@@ -196,7 +195,7 @@ function Puzzle(img, canvasSize, numRows) {
 }
 
 /**
- * Representa uma subimagem de um quebra cabeças
+ * Representa uma subimagem de um quebra cabeÃ§as
  */
 function SubImage(img, s, startX, startY) {
 
